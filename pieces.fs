@@ -8,6 +8,9 @@ type king(col : Color) =
   override this.candiateRelativeMoves =
       [[(-1,0)];[(-1,1)];[(0,1)];[(1,1)];
       [(1,0)];[(1,-1)];[(0,-1)];[(-1,-1)]]
+  
+  override this.availableMoves (board: Board) : (Position list * chessPiece list) =
+    
 /// A rook is a chessPiece which moves horisontally and vertically
 type rook(col : Color) =
   inherit chessPiece(col)
