@@ -33,3 +33,4 @@ type rook(col : Color) =
   override this.candiateRelativeMoves =
     List.map (swap List.map [1..7]) indToRel (*//§\label{chessPieceSwapApp}§*)
   override this.nameOfType = "rook"
+.
