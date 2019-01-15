@@ -1,4 +1,5 @@
-module Chess (*//§\label{chessHeader}§*)
+module Chess 
+//§\label{chessHeader}§
 type Color = White | Black
 type Position = int * int(*//§\label{chessTypeEnd}§*)
 /// An abstract chess piece §\label{chessPieceBegin}§

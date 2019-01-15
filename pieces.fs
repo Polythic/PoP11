@@ -8,9 +8,36 @@ type king(col : Color) =
   override this.candiateRelativeMoves =
       [[(-1,0)];[(-1,1)];[(0,1)];[(1,1)];
       [(1,0)];[(1,-1)];[(0,-1)];[(-1,-1)]]
-  
+  // king cannot move to threatened squares
   override this.availableMoves (board: Board) : (Position list * chessPiece list) =
-    
+    let allMoves = board.getVacantNNeighbours this
+    let validMoves = fst allMoves
+    let piecesList = snd allMoves
+    let mutable listOfPieces = []
+    for i = 0 to 7 do
+      for j = 0 to 7 do
+        listOfPieces <- listOfPieces :: board.Item(i,j)
+
+    let rec remove index list =
+      match index, list with
+      | 0, x::xs -> xs
+      | i, x::xs -> x::remove (index - 1) xs
+      | i, [] -> failwith "Index out of range"
+
+    let opponentColour = if col = White then Black else White
+    for i in listOfPieces do
+      for j in validMoves do
+        if i.color = opponentColour then
+          for k in i.availableMoves do
+            if j = k then
+              let jIndex = List.findIndex (fun x -> x = j) validMoves
+              remove jIndex validMoves
+            else
+              validMoves
+        else
+          validMoves
+    (validMoves, piecesList)
+
 /// A rook is a chessPiece which moves horisontally and vertically
 type rook(col : Color) =
   inherit chessPiece(col)
