@@ -21,8 +21,8 @@ type chessPiece(color : Color) =
   /// at hand.      
   abstract member candiateRelativeMoves : Position list list
   /// Available moves and neighbours ([(1,0); (2,0);...], [p1; p2])
-  member this.availableMoves (board : Board) : (Position list * chessPiece list) =
-    board.getVacantNNeighbours this (*//§\label{chessPieceEnd}§*)
+  abstract member availableMoves : Board -> (Position list * chessPiece list)
+  default this.availableMoves (board : Board) = board.getVacantNNeighbours this (*//§\label{chessPieceEnd}§*)
 /// A board §\label{chessBoardBegin}§
 and Board () =
   let _array = Collections.Array2D.create<chessPiece option> 8 8 None

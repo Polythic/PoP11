@@ -10,13 +10,25 @@ type king(col : Color) =
       [(1,0)];[(1,-1)];[(0,-1)];[(-1,-1)]]
   // king cannot move to threatened squares
   override this.availableMoves (board: Board) : (Position list * chessPiece list) =
-    let allMoves = board.getVacantNNeighbours this
-    let validMoves = fst allMoves
+    let allMoves: (Position list * chessPiece list) = board.getVacantNNeighbours this
+    let mutable validMoves = fst allMoves
     let piecesList = snd allMoves
-    let mutable listOfPieces = []
+    let mutable listOfPieces: chessPiece list = []
     for i = 0 to 7 do
       for j = 0 to 7 do
-        listOfPieces <- listOfPieces :: board.Item(i,j)
+        if (i,j) <> this.position.Value then
+          let boardPiece: chessPiece option = board.Item(i,j)
+          if boardPiece.IsSome then
+            listOfPieces <- boardPiece.Value :: listOfPieces
+    //let filteredPieces: chessPiece option list = List.filter (fun x -> x.IsSome) listOfPieces
+    //let valueOfPieces: chessPiece list = //List.map (fun x -> x.Value) filteredPieces
+      (*let mutable lst = []
+      for i in filteredPieces do
+        lst<- i.Value :: lst
+      lst *)
+    //printfn "%A" validMoves
+    //printfn "%A" listOfPieces
+    //List.map (fun x -> x.Value) filteredPieces
 
     let rec remove index list =
       match index, list with
@@ -27,15 +39,13 @@ type king(col : Color) =
     let opponentColour = if col = White then Black else White
     for i in listOfPieces do
       for j in validMoves do
-        if i.color = opponentColour then
-          for k in i.availableMoves do
+        let colorOfI: Color = i.color
+        if colorOfI = opponentColour then
+          let moves = fst (i.availableMoves board)
+          for k in moves do
             if j = k then
               let jIndex = List.findIndex (fun x -> x = j) validMoves
-              remove jIndex validMoves
-            else
-              validMoves
-        else
-          validMoves
+              validMoves<- remove jIndex validMoves
     (validMoves, piecesList)
 
 /// A rook is a chessPiece which moves horisontally and vertically
@@ -60,4 +70,3 @@ type rook(col : Color) =
   override this.candiateRelativeMoves =
     List.map (swap List.map [1..7]) indToRel (*//§\label{chessPieceSwapApp}§*)
   override this.nameOfType = "rook"
-
