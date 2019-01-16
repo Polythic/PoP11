@@ -42,6 +42,9 @@ and Board () =
     // Choose absolute positions that are on the board
     |> List.choose validPositionWrap
   /// Board is indexed using .[,] notation
+  member this.Convert (pos: Position) (lst: Position list) : Position list =
+    relativeToAbsolute pos lst
+  
   member this.Item
     with get(a : int, b : int) = _array.[a, b]
     and set(a : int, b : int) (p : chessPiece option) = 

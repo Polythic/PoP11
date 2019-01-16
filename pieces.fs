@@ -10,25 +10,39 @@ type king(col : Color) =
       [(1,0)];[(1,-1)];[(0,-1)];[(-1,-1)]]
   // king cannot move to threatened squares
   override this.availableMoves (board: Board) : (Position list * chessPiece list) =
+    let opponentColour = if col = White then Black else White
     let allMoves: (Position list * chessPiece list) = board.getVacantNNeighbours this
     let mutable validMoves, piecesList = allMoves
     //let piecesList = snd allMoves
     let mutable listOfPieces: chessPiece list = []
-    for i = 0 to 7 do
-      for j = 0 to 7 do
-        if (i,j) <> this.position.Value then
-          let boardPiece: chessPiece option = board.Item(i,j)
-          if boardPiece.IsSome then
-            listOfPieces <- boardPiece.Value :: listOfPieces
+    let mutable threatenedMoves: Position list = []
 
     let rec remove index list =
       match index, list with
       | 0, x::xs -> xs
       | i, x::xs -> x::remove (index - 1) xs
       | i, [] -> failwith "Index out of range"
+    
+    match this.position with
+    | Some p ->
+      for i = 0 to 7 do
+        for j = 0 to 7 do
+          if (i,j) <> p then
+            let boardPiece: chessPiece option = board.[i,j]
+            match boardPiece with
+            | Some piece when piece.color = opponentColour ->
+              let pieceMoves = board.Convert piece.position.Value (List.concat piece.candiateRelativeMoves)
+              for i in pieceMoves do
+                if List.contains i validMoves then
+                  let index = List.findIndex (fun x -> x = i) validMoves
+                  validMoves <- remove index validMoves
+              //threatenedMoves <- pieceMoves @ threatenedMoves
+            | _ -> ()
+    | None -> ()
 
-    let opponentColour = if col = White then Black else White
-    for i in listOfPieces do
+    
+
+    (* for i in listOfPieces do
       for j in validMoves do
         let colorOfI: Color = i.color
         if colorOfI = opponentColour then
@@ -36,7 +50,7 @@ type king(col : Color) =
           for k in moves do
             if j = k then
               let jIndex = List.findIndex (fun x -> x = j) validMoves
-              validMoves<- remove jIndex validMoves
+              validMoves<- remove jIndex validMoves *)
     (validMoves, piecesList)
 
 /// A rook is a chessPiece which moves horisontally and vertically
