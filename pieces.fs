@@ -11,8 +11,8 @@ type king(col : Color) =
   // king cannot move to threatened squares
   override this.availableMoves (board: Board) : (Position list * chessPiece list) =
     let allMoves: (Position list * chessPiece list) = board.getVacantNNeighbours this
-    let mutable validMoves = fst allMoves
-    let piecesList = snd allMoves
+    let mutable validMoves, piecesList = allMoves
+    //let piecesList = snd allMoves
     let mutable listOfPieces: chessPiece list = []
     for i = 0 to 7 do
       for j = 0 to 7 do
@@ -20,15 +20,6 @@ type king(col : Color) =
           let boardPiece: chessPiece option = board.Item(i,j)
           if boardPiece.IsSome then
             listOfPieces <- boardPiece.Value :: listOfPieces
-    //let filteredPieces: chessPiece option list = List.filter (fun x -> x.IsSome) listOfPieces
-    //let valueOfPieces: chessPiece list = //List.map (fun x -> x.Value) filteredPieces
-      (*let mutable lst = []
-      for i in filteredPieces do
-        lst<- i.Value :: lst
-      lst *)
-    //printfn "%A" validMoves
-    //printfn "%A" listOfPieces
-    //List.map (fun x -> x.Value) filteredPieces
 
     let rec remove index list =
       match index, list with
