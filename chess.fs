@@ -111,12 +111,9 @@ and Board () =
 [<AbstractClass>]
 type Player(col: Color) =
   
-  let mutable _playerColor = col
   abstract member nextMove : string
 
-  member this.color 
-    with get() = _playerColor 
-    and set(value) = _playerColor <- value 
+  member this.color = col
 
 type Human(col: Color) =
   inherit Player(col)
@@ -147,12 +144,21 @@ type Human(col: Color) =
     
     getUserMove()
 
-type Game =
-  let player1 = Human(White)
-  let player2 = Human(Black)
+type Game(p: Player, q: Player) =
+  let player1 = p
+  let player2 = q
   let firstPlayer =
     match player1.color with
     | White -> player1
     | Black -> player2
 
   member this.run =
+    let rec runGame (p: Player) =
+      if p = player1 then
+        p.nextMove
+        runGame player2
+      else
+        p.nextMove
+        runGame player1
+    runGame this
+
