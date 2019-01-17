@@ -170,10 +170,6 @@ and Game (p: Player, q: Player, board: Board) =
     | White -> player1
     | Black -> player2
 
-  let mutable _gameActive = true
-  member this.active 
-    with get() = _gameActive
-    and set(state: bool) = _gameActive <- state
   member this.run =
     let rec runGame (p: Player) =
       let play = p.nextMove board
