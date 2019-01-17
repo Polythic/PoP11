@@ -145,7 +145,9 @@ type Human(col: Color) =
             else
               printfn "This piece is the wrong color"
               getUserMove()
-        
+        else
+          printfn "Please type a valid move"
+          getUserMove()
       elif readLine = "quit" then
         printfn "Game over"
         state <- false
