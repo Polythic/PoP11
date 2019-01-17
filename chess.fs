@@ -1,5 +1,4 @@
-module Chess 
-//§\label{chessHeader}§
+module Chess (*//§\label{chessHeader}§*)
 type Color = White | Black
 type Position = int * int(*//§\label{chessTypeEnd}§*)
 /// An abstract chess piece §\label{chessPieceBegin}§
@@ -111,45 +110,57 @@ and Board () =
 [<AbstractClass>]
 type Player(col: Color) =
   
-  abstract member nextMove : unit
+  abstract member nextMove : Board -> bool
 
   member this.color = col
 
 type Human(col: Color) =
   inherit Player(col)
 
-  override this.nextMove : unit =
-    let numberList = ['1'..'8']
+  override this.nextMove (board: Board) : bool =
+    printfn "Player %A please state your move" this.color
+    let numberList = [1..8]
     let letterList = ['a'..'h']
+    let charToInt c = int c - int '0'
+    let playerColor = this.color
+    let mutable state = true
     let rec getUserMove() = 
       let mutable readLine = System.Console.ReadLine()
-      let validMove (line: string) : bool =
-        if readLine.Length = 5 then
-          if (List.forall (fun x -> (List.contains line.[x] letterList) = true) [0;3]) && (List.forall (fun x -> (List.contains line.[x] numberList) = true) [1;4]) then
-            true
-          else
-            false
+      if readLine.Length = 5 then
+        if (List.contains readLine.[0] letterList) && (List.contains readLine.[3] letterList) && (List.contains (charToInt readLine.[1]) numberList) && (List.contains (charToInt readLine.[1]) numberList) then
+          let startPosition: Position = (numberList.[(List.findIndex (fun x -> x = readLine.[0]) letterList)] - 1, charToInt readLine.[1] - 1)
+          let endPosition: Position = (numberList.[(List.findIndex (fun x -> x = readLine.[3]) letterList)] - 1, charToInt readLine.[4] - 1)
+          let pieceAtPosition = board.[fst startPosition, snd startPosition]
+          match pieceAtPosition with
+          | None -> 
+            printfn "Empty start field"
+            getUserMove()
+          | Some p ->
+            if p.color = playerColor then
+              if List.contains endPosition (fst (p.availableMoves board)) then
+                board.move startPosition endPosition
+              else
+                printfn "This piece can't move there"
+                getUserMove()
+            else
+              printfn "This piece is the wrong color"
+              getUserMove()
+        
+      elif readLine = "quit" then
+        printfn "Game over"
+        state <- false
 
-        elif readLine = "quit" then
-          true
-
-        else
-          false
-
-      if validMove readLine then
-        readLine
       else
         printfn "\nPlease type a valid move"
         getUserMove()
-    
-    let userMove = getUserMove()
-    let startPosition = (int numberList.[(List.findIndex (fun x -> x = userMove.[0]) letterList)], int userMove.[1])
-    let endPosition = (numberList.[int (List.findIndex (fun x -> x = userMove.[3]) letterList)], int userMove.[4])
-    Board().move(startPosition endPosition)
 
-    
+    do getUserMove()
+    state
+      
 
-type Game(p: Player, q: Player) =
+      
+
+and Game (p: Player, q: Player, board: Board) =
   let player1 = p
   let player2 = q
   let firstPlayer =
@@ -157,13 +168,16 @@ type Game(p: Player, q: Player) =
     | White -> player1
     | Black -> player2
 
+  let mutable _gameActive = true
+  member this.active 
+    with get() = _gameActive
+    and set(state: bool) = _gameActive <- state
   member this.run =
     let rec runGame (p: Player) =
-      if p = player1 then
-        p.nextMove
-        runGame player2
-      else
-        p.nextMove
-        runGame player1
+      let play = p.nextMove board
+      if play = true then
+        printfn "%A" board
+        if p = player1 then runGame player2 else runGame player1
+    
     runGame firstPlayer
 

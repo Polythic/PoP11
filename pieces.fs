@@ -36,6 +36,7 @@ type king(col : Color) =
                 if List.contains i validMoves then
                   let index = List.findIndex (fun x -> x = i) validMoves
                   validMoves <- remove index validMoves
+              validMoves <- piece.position.Value :: validMoves
               //threatenedMoves <- pieceMoves @ threatenedMoves
             | _ -> ()
     | None -> ()
@@ -73,5 +74,6 @@ type rook(col : Color) =
   // swap converts (List.map fct indices) to (List.map indices fct).
   let swap f a b = f b a
   override this.candiateRelativeMoves =
-    List.map (swap List.map [1..7]) indToRel (*//§\label{chessPieceSwapApp}§*)
+      List.map (swap List.map [1..7]) indToRel (*//§\label{chessPieceSwapApp}§*)
+      
   override this.nameOfType = "rook"

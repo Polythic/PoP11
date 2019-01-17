@@ -13,12 +13,15 @@ let pieces = [|
   king (Black) :> chessPiece;
   rook (Black) :> chessPiece |]
 // Place pieces on the board
-board.[0,0] <- Some pieces.[0]
+board.[0,1] <- Some pieces.[0]
 board.[1,1] <- Some pieces.[1]
 board.[4,1] <- Some pieces.[2]
-board.[4,0] <- Some pieces.[3]
+board.[0,0] <- Some pieces.[3]
 printfn "%A" board
-Array.iter (printPiece board) pieces
+
+let newGame = Game(Human(White), Human(Black), board)
+newGame.run
+//Array.iter (printPiece board) pieces
 //printfn "%A" (board.Item.[0,0])
 // Make moves
 //board.move (1,1) (3,1) // Moves a piece from (1,1) to (3,1)
