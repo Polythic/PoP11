@@ -109,32 +109,50 @@ and Board () =
         (vacant, opponent)(*//§\label{chessBoardEnd}§*)
 
 [<AbstractClass>]
-type Player =
-  abstract member nextMove : unit
-
-type Human =
-  inherit Player
+type Player(col: Color) =
   
-  override this.nextMove : unit =
+  let mutable _playerColor = col
+  abstract member nextMove : string
+
+  member this.color 
+    with get() = _playerColor 
+    and set(value) = _playerColor <- value 
+
+type Human(col: Color) =
+  inherit Player(col)
+
+  override this.nextMove : string =
     let rec getUserMove() = 
       let mutable readLine = System.Console.ReadLine()
       let validMove (line: string) : bool =
         if readLine.Length = 5 then
           let letterList = ['a'..'h']
           let numberList = ['1'..'8']
-          
-          if (List.forall (fun x -> (List.contains readLine.[x] letterList) = true) [0;3]) && (List.forall (fun x -> (List.contains readLine.[x] numberlist) = true) [1;4]) then
+          if (List.forall (fun x -> (List.contains line.[x] letterList) = true) [0;3]) && (List.forall (fun x -> (List.contains line.[x] numberList) = true) [1;4]) then
+            true
+          else
+            false
 
-
-        elif readLine = "quit"
+        elif readLine = "quit" then
+          true
 
         else
-        
+          false
 
-            
-        if validMove readLine then
-          readLine
-        else
-          printfn "\nPlease type a valid move"
-          getUserMove()
+      if validMove readLine then
+        readLine
+      else
+        printfn "\nPlease type a valid move"
+        getUserMove()
     
+    getUserMove()
+
+type Game =
+  let player1 = Human(White)
+  let player2 = Human(Black)
+  let firstPlayer =
+    match player1.color with
+    | White -> player1
+    | Black -> player2
+
+  member this.run =
