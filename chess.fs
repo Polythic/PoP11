@@ -107,3 +107,34 @@ and Board () =
           vacantPieceLists
           |> List.choose snd 
         (vacant, opponent)(*//§\label{chessBoardEnd}§*)
+
+[<AbstractClass>]
+type Player =
+  abstract member nextMove : unit
+
+type Human =
+  inherit Player
+  
+  override this.nextMove : unit =
+    let rec getUserMove() = 
+      let mutable readLine = System.Console.ReadLine()
+      let validMove (line: string) : bool =
+        if readLine.Length = 5 then
+          let letterList = ['a'..'h']
+          let numberList = ['1'..'8']
+          
+          if (List.forall (fun x -> (List.contains readLine.[x] letterList) = true) [0;3]) && (List.forall (fun x -> (List.contains readLine.[x] numberlist) = true) [1;4]) then
+
+
+        elif readLine = "quit"
+
+        else
+        
+
+            
+        if validMove readLine then
+          readLine
+        else
+          printfn "\nPlease type a valid move"
+          getUserMove()
+    
