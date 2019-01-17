@@ -111,20 +111,20 @@ and Board () =
 [<AbstractClass>]
 type Player(col: Color) =
   
-  abstract member nextMove : string
+  abstract member nextMove : unit
 
   member this.color = col
 
 type Human(col: Color) =
   inherit Player(col)
 
-  override this.nextMove : string =
+  override this.nextMove : unit =
+    let numberList = ['1'..'8']
+    let letterList = ['a'..'h']
     let rec getUserMove() = 
       let mutable readLine = System.Console.ReadLine()
       let validMove (line: string) : bool =
         if readLine.Length = 5 then
-          let letterList = ['a'..'h']
-          let numberList = ['1'..'8']
           if (List.forall (fun x -> (List.contains line.[x] letterList) = true) [0;3]) && (List.forall (fun x -> (List.contains line.[x] numberList) = true) [1;4]) then
             true
           else
@@ -142,7 +142,12 @@ type Human(col: Color) =
         printfn "\nPlease type a valid move"
         getUserMove()
     
-    getUserMove()
+    let userMove = getUserMove()
+    let startPosition = (int numberList.[(List.findIndex (fun x -> x = userMove.[0]) letterList)], int userMove.[1])
+    let endPosition = (numberList.[int (List.findIndex (fun x -> x = userMove.[3]) letterList)], int userMove.[4])
+    Board().move(startPosition endPosition)
+
+    
 
 type Game(p: Player, q: Player) =
   let player1 = p
@@ -160,5 +165,5 @@ type Game(p: Player, q: Player) =
       else
         p.nextMove
         runGame player1
-    runGame this
+    runGame firstPlayer
 
